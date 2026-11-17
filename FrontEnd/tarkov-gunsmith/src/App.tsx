@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.scss';
 import {
-  BrowserRouter, Route, Routes
+  BrowserRouter, HashRouter, Route, Routes
 } from "react-router-dom";
 import Home from './Components/Home';
 import PageNotFound from './Components/PageNotFound';
@@ -23,6 +23,8 @@ import { AmmoEffectivenessPage } from './Pages/AEC_mk2/ammo-effectiveness-page';
 import { TestPage } from './Pages/TestPage/test-page';
 
 function App() {
+  const Router = process.env.REACT_APP_USE_HASH_ROUTER === 'true' ? HashRouter : BrowserRouter;
+
   return (
     <>
       <HelmetProvider>
@@ -58,7 +60,7 @@ function App() {
             },
           }
           }>
-          <BrowserRouter>
+          <Router>
             <TgAppShell>
               {/* <Header /> */}
               <Routes>
@@ -101,7 +103,7 @@ function App() {
 
             </TgAppShell>
 
-          </BrowserRouter>
+          </Router>
         </MantineProvider>
       </HelmetProvider>
     </>

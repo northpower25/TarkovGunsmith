@@ -1,0 +1,55 @@
+name: Deploy frontend to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - copilot/selfhost-single-container
+    paths:
+      - FrontEnd/tarkov-gunsmith/**
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+          cache: npm
+          cache-dependency-path: FrontEnd/tarkov-gunsmith/package-lock.json
+      - name: Install dependencies
+        working-directory: FrontEnd/tarkov-gunsmith
+        run: npm ci --legacy-peer-deps
+      - name: Build frontend
+        working-directory: FrontEnd/tarkov-gunsmith
+        env:
+          CI: false
+          PUBLIC_URL: /${{ github.event.repository.name }}
+          REACT_APP_USE_HASH_ROUTER: "true"
+          REACT_APP_WISHGRANTER_API_URL: https://api.tarkovgunsmith.com
+        run: npm run build
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: FrontEnd/tarkov-gunsmith/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

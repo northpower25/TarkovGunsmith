@@ -13,6 +13,10 @@ Open `http://localhost:8080`. For public access, put a TLS-enabled reverse proxy
 
 The official API receives your calculation inputs, and the app depends on its availability, CORS policy and terms of use. To use a different compatible API, rebuild the image with `--build-arg REACT_APP_WISHGRANTER_API_URL=https://your-api.example`. The URL is embedded at build time; changing container environment variables at runtime will not change it.
 
+## GitHub Pages
+
+Set the repository's Pages source to **GitHub Actions**. The Pages workflow builds the frontend with hash-based routing for the repository subpath and deploys it on pushes to `main` or `copilot/selfhost-single-container`. The deployed site uses the official API and is subject to the same availability and CORS limitations described above.
+
 ## Local development
 
 1. In `FrontEnd/tarkov-gunsmith`, run `npm install`.
