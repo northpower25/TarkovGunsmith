@@ -1,0 +1,9 @@
+.git
+**/node_modules
+**/build
+**/bin
+**/obj
+**/publish
+**/.env
+**/nuget.config
+**/NuGet.Config

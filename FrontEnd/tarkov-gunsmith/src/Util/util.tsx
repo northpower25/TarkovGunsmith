@@ -16,28 +16,10 @@
 
 // // console.log(process.env.REACT_APP_WISHGRANTER_API_URL);
 
-var api: string = process.env.REACT_APP_WISHGRANTER_API_URL ?? ''
-var API: string = '';
+const developmentApiUrl = "http://localhost:5000";
 
-var AEC_LocalStorage_Key = 'TarkovGunsmith_AEC_Default';
-// empty strings are falsy/falsey
-if (api) 
-{ 
-     API = api;
-     AEC_LocalStorage_Key = "TarkovGunsmith_AEC";
-}
-else 
-{ 
-    API = "http://localhost:5000"
-
-}
-
-if(api === 'http://localhost:5000'){
-    AEC_LocalStorage_Key = "TarkovGunsmith_AEC_DEV";
-}
-else{
-    AEC_LocalStorage_Key = "TarkovGunsmith_AEC";
-}
-
-export const API_URL = API;
-export const AEC_LS_KEY = AEC_LocalStorage_Key;
+export const API_URL =
+    process.env.REACT_APP_WISHGRANTER_API_URL ??
+    (process.env.NODE_ENV === "development" ? developmentApiUrl : "");
+export const AEC_LS_KEY =
+    API_URL === developmentApiUrl ? "TarkovGunsmith_AEC_DEV" : "TarkovGunsmith_AEC";

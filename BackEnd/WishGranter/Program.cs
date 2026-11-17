@@ -47,13 +47,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Define some important constants to initialize tracing with
 //https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-7.0&tabs=windows#environment-variables
 //? Use these for local dev
-var honeycombServiceName = builder.Configuration["Honeycomb:ServiceName"];
+var honeycombServiceName = builder.Configuration["Honeycomb:ServiceName"] ?? "TarkovGunsmith";
 var honeycombApiKey = builder.Configuration["Honeycomb:ApiKey_DEV"];
 
 if (string.IsNullOrEmpty(honeycombApiKey))
 {
     //? Use these for AWS deploys
-    honeycombServiceName = Environment.GetEnvironmentVariable("ServiceName");
+    honeycombServiceName = Environment.GetEnvironmentVariable("ServiceName") ?? honeycombServiceName;
     honeycombApiKey = Environment.GetEnvironmentVariable("ApiKey_Honeycomb"); // this is in the AWS deploy plan
 }
 
@@ -71,9 +71,12 @@ var options = new HoneycombOptions
     ResourceBuilder = ResourceBuilder.CreateDefault()
 };
 
-using var tracerProvider = Sdk.CreateTracerProviderBuilder()
-    .AddHoneycomb(options)
-    .Build();
+var tracerProviderBuilder = Sdk.CreateTracerProviderBuilder();
+if (!string.IsNullOrWhiteSpace(honeycombApiKey))
+{
+    tracerProviderBuilder.AddHoneycomb(options);
+}
+using var tracerProvider = tracerProviderBuilder.Build();
 
 await startAPIAsync();
 
@@ -92,21 +95,24 @@ async Task startAPIAsync()
         options.Level = CompressionLevel.SmallestSize;
     });
 
-    builder.Services.AddOpenTelemetry().WithTracing(tracerProviderBuilder =>
+    builder.Services.AddOpenTelemetry().WithTracing(tracingBuilder =>
     {
-        tracerProviderBuilder
+        tracingBuilder
             .AddConsoleExporter()
             .AddSource(MyActivitySource.Name)
             .SetResourceBuilder(appResourceBuilder)
             .AddHttpClientInstrumentation()
             .AddAspNetCoreInstrumentation()
-            .AddSqlClientInstrumentation()
-            .AddOtlpExporter(opt =>
+            .AddSqlClientInstrumentation();
+        if (!string.IsNullOrWhiteSpace(honeycombApiKey))
+        {
+            tracingBuilder.AddOtlpExporter(opt =>
             {
                 opt.Endpoint = new Uri("https://api.honeycomb.io");
                 opt.Headers = $"x-honeycomb-team={honeycombApiKey}";
                 opt.Protocol = OtlpExportProtocol.HttpProtobuf;
             });
+        }
     });
 
     builder.Services.AddCors(options =>
@@ -131,6 +137,8 @@ async Task startAPIAsync()
     var app = builder.Build();
 
     app.UseResponseCompression();
+    app.UseDefaultFiles();
+    app.UseStaticFiles();
 
     app.UseSwagger();
     app.UseSwaggerUI(c =>
@@ -143,7 +151,6 @@ async Task startAPIAsync()
 
     //! ******* Basics *******
     app.MapHealthChecks("/health");
-    app.MapGet("/", () => "Hello World! I use Swagger btw, suck it arch.");
 
     //app.MapGet("/GetArmorOptionsList", () => API_Basics.GetArmorOptionsList(MyActivitySource));
     //app.MapGet("/GetAmmoOptionsList", () => API_Basics.GetAmmoOptionsList(MyActivitySource));
@@ -213,6 +220,8 @@ async Task startAPIAsync()
     //! ******* AEC *******
     app.MapGet("/GetAmmoEffectivenessChart", 
         () => API_Basics.GetNewAECData(MyActivitySource));
+
+    app.MapFallbackToFile("index.html");
 
     //app.MapPut("/UpdateAmmoRatingsInAEC", () => API_AEC.UpdateRatingsAEC(MyActivitySource));
     //app.MapGet("/GetTimestampAEC", () => API_AEC.GetTimestampAEC());
