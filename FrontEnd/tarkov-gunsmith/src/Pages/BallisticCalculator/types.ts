@@ -1,61 +1,12 @@
 import { BallisticSimInput } from "./ballistic-calculator-form-context";
 
+export const CALIBRATION_RANGES = [25, 50, 75, 100, 125, 150, 200, 250, 300, 350, 400, 450];
+
 export interface DropCalculatorInput {
   defaultAmmoInput: BallisticSimInput;
   secondAmmoInput: BallisticSimInput;
   calibrationDistances: number[];
   lineOfSightOverBore: number;
-}
-
-export interface DropCalculatorInputWithMeta extends DropCalculatorInput {
-    caliberName: string;
-    weaponId: string;
-    barrelId: string;
-}
-
-export interface DopeTableUI_Options {
-  calibers: DopeTableUI_Caliber[];
-  calibrationRanges: number[];
-  maxMaxDistance: number;
-}
-
-export interface DopeTableUI_Caliber {
-  caliberName: string;
-  allAmmosOfCaliber: DopeTableUI_Ammo[];
-  weaponsOfCaliber: DopeTableUI_Weapon[];
-}
-
-export interface DopeTableUI_Ammo {
-  ammoLabel: string;
-  stats: DopeTableUI_AmmoStats;
-}
-
-export interface DopeTableUI_AmmoStats {
-  id: string;
-  name: string;
-  initialSpeed: number;
-  ballisticCoefficient: number;
-  bulletDiameterMillimeters: number;
-  bulletMass: number;
-  penetration: number;
-  damage: number;
-  accuracyModifier: number;
-}
-
-export interface DopeTableUI_Weapon {
-  id: string;
-  shortName: string;
-  defaultAmmo: DopeTableUI_Ammo;
-  velocityModifier: number;
-  centerOfImpact: number
-  possibleBarrels: DopeTableUI_Barrel[];
-}
-
-export interface DopeTableUI_Barrel {
-  id: string;
-  shortName: string;
-  velocityModifier: number;
-  centerOfImpact: number
 }
 
 export interface BallisticSimDataPoint {

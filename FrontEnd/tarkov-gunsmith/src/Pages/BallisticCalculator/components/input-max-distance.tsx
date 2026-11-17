@@ -1,11 +1,11 @@
 import { Grid, Group, Input, NumberInput, Text } from "@mantine/core";
 import { useBallisticCalculatorFormContext } from "../ballistic-calculator-form-context";
+import { CALIBRATION_RANGES } from "../types";
 
 export function InputMaxDistance() {
     const form = useBallisticCalculatorFormContext();
-    const minMaxDistance = parseInt(form.values.dopeTableSelections.calibration)
 
-    const calibrationRangesJoin = form.values.dopeTableOptions.calibrationRanges
+    const calibrationRangesJoin = CALIBRATION_RANGES
         .filter(x => x <= form.values.maxDistance)
         .join(", ");
 
@@ -15,8 +15,8 @@ export function InputMaxDistance() {
                 w={140}
                 label={"Max Distance (m)"}
                 precision={0}
-                max={2000}
-                min={minMaxDistance}
+                max={1600}
+                min={100}
                 step={10}
                 stepHoldDelay={500}
                 stepHoldInterval={(t) => Math.max(1000 / t ** 2, 25)}

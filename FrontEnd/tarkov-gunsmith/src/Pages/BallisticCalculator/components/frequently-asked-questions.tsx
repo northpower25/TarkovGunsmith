@@ -39,14 +39,14 @@ export function FrequentlyAskedQuestions() {
                                 How is a zero/calibration distance angle made? <br />
                             </Text>
                             <Text size={13}>
-                                First the <b>default ammo</b> of a weapon is simulated, accounting for the barrel, mods, etc without any angle, just straight forward along the barrel axis.
-                                From this default ammo at horizontal curve, we can take two numbers: the distance and the drop. Using these with Atan(), we can find the required "departure angle"
+                                First the calculator simulates the <b>calibration ammo</b> you enter without any angle, straight forward along the barrel axis.
+                                From this reference ammo's horizontal trajectory, it takes two numbers: the distance and the drop. Using these with Atan(), it finds the required "departure angle"
                                 for the bullet to reach that distance with zero drop relative to the muzzle's position. To account for the line of sight's height over the bore, we can add this
                                 number to the drop before finding the angle. The game does this automatically, so you don't need to worry about it.
                             </Text>
                             <br />
                             <Text size={13}>
-                                But remember, this is only for the <b>default ammo</b> of a weapon, so what the game/we are producing is the <strong>calibration distance angle</strong> for the <i>default ammo only</i>, so not really a "zero".
+                                But remember, this angle is based only on the <b>calibration ammo</b> you entered. The calculator compares it with the separate <b>calculation ammo</b> you provide; what it produces is a <strong>calibration distance angle</strong>, not really a "zero".
                                 So when you select a "zero" in Tarkov, you're really selecting this <strong>calibration distance angle</strong>.
                                 Also keep in mind that for distances at or below 50m you will have a "close zero" (1st intersection LoS) and above that you will have a "far zero" (2nd intersection LoS). The default height over bore is 68.58mm (2.7"), but this can be customized to your specific requirements.
                             </Text>

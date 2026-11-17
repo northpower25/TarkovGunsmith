@@ -4,13 +4,8 @@ import { bsgAmmoFactor, getTarkovMOA } from "../types";
 
 export function AdditionalAccuracyModifier() {
     const form = useBallisticCalculatorFormContext();
-    const baseAccuracy =
-        (form.values.dopeTableSelections.barrelObj
-            ? form.values.dopeTableSelections.barrelObj.centerOfImpact
-            : form.values.dopeTableSelections.weaponObj?.centerOfImpact) ?? 0;
-
-    const usingBarrelBaseAccuracy: boolean = form.values.dopeTableSelections.barrelObj ? true : false
-    const ammoAccuracy = form.values.dopeTableSelections.calculationAmmoObj?.stats.accuracyModifier ?? 0;
+    const baseAccuracy = form.values.weaponAccuracy;
+    const ammoAccuracy = form.values.calculationAmmo.accuracyModifier;
     const aam = form.values.additionalAccuracyModifier
     const aamMult = ((100 + (-1 *aam)) / 100);
     const radiusCm100m = (100 * baseAccuracy * bsgAmmoFactor(ammoAccuracy) * aamMult)
@@ -23,20 +18,10 @@ export function AdditionalAccuracyModifier() {
             <Group grow pl={5} spacing={6}>
                 <Stack spacing={4}>
                     <Input.Description>
-                        {usingBarrelBaseAccuracy && (
-                            <Text size="sm">
-                                Barrel Accuracy: <br />
-                                {getTarkovMOA(baseAccuracy, 0, 1).toFixed(2)} Tarkov MOA / {baseAccuracy} CRad  <br />
-                                Ammo Accuracy: {ammoAccuracy}
-                            </Text>
-                        )}
-                        {!usingBarrelBaseAccuracy && (
-                            <Text size="sm">
-                                Weapon Accuracy:<br />
-                                {getTarkovMOA(baseAccuracy, 0, 1).toFixed(2)} Tarkov MOA / {baseAccuracy} CRad  <br />
-                                Ammo Accuracy: {ammoAccuracy}
-                            </Text>
-                        )}
+                        <Text size="sm">
+                            Weapon accuracy: {getTarkovMOA(baseAccuracy, 0, 1).toFixed(2)} Tarkov MOA / {baseAccuracy} CRad
+                            <br />Ammo accuracy modifier: {ammoAccuracy}%
+                        </Text>
                     </Input.Description>
                     <NumberInput
                         label={"Additional Accuracy Modifier"}
@@ -47,7 +32,7 @@ export function AdditionalAccuracyModifier() {
                         step={.1}
                         stepHoldDelay={500}
                         stepHoldInterval={(t) => Math.max(1000 / t ** 2, 25)}
-                        description={"From weapon durability or muzzle devices. Change this so that Tarkov MOA matches in-game inspect panel value."}
+                        description={"From weapon durability or muzzle devices. Change this so that Tarkov MOA matches the in-game inspect panel value."}
                         {...form.getInputProps("additionalAccuracyModifier")}
                     />
 
